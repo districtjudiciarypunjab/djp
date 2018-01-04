@@ -1,0 +1,16 @@
+# www.robotstxt.org/
+
+# Allow crawling of all content
+User-agent: *
+Disallow: /admin/
+Allow: /
+Sitemap: http://www.domprojects.com/sitemap.xml
+
+---Malik Waris
+---Shahid Muneer
+<<<<<<< HEAD
+
+=======
+---Some new changes
+>>>>>>> 5ece1df91472eae615f24ca9b4b24e0aa6c9485c
+aksdjflkasjdf
