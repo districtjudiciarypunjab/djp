@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 08, 2018 at 11:04 AM
+-- Generation Time: Dec 26, 2017 at 08:06 AM
 -- Server version: 5.7.9
 -- PHP Version: 7.0.0
 
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `courts` (
 --
 
 INSERT INTO `courts` (`id`, `court_number`, `judge_id`, `city_id`, `court_type_id`, `user_id`, `sorting`) VALUES
-(8, 'Lahore-1', 14, 9, 1, 27, 0),
+(8, 'Lahore-1', 14, NULL, 1, NULL, 0),
 (9, 'Lahore-2', 3, NULL, 1, NULL, 0);
 
 -- --------------------------------------------------------
@@ -352,25 +352,6 @@ CREATE TABLE IF NOT EXISTS `login_attempts` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pending_cases`
---
-
-DROP TABLE IF EXISTS `pending_cases`;
-CREATE TABLE IF NOT EXISTS `pending_cases` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `court_id` int(11) NOT NULL,
-  `category_id` int(11) NOT NULL,
-  `pending_amount` int(11) NOT NULL DEFAULT '0',
-  `date_of_institution` datetime NOT NULL,
-  `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `court_id` (`court_id`,`category_id`),
-  KEY `category_key` (`category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `public_preferences`
 --
 
@@ -399,33 +380,30 @@ CREATE TABLE IF NOT EXISTS `report` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `court_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
-  `fresh` int(11) NOT NULL DEFAULT '0',
-  `contested` int(11) NOT NULL DEFAULT '0',
-  `uncontested` int(11) NOT NULL DEFAULT '0',
-  `transfer` int(11) NOT NULL DEFAULT '0',
-  `received` int(11) NOT NULL DEFAULT '0',
+  `type_id` int(11) NOT NULL,
+  `amount` int(11) NOT NULL,
   `date_of_report` datetime NOT NULL,
-  `date_of_institution` datetime NOT NULL,
   `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `court_id` (`court_id`,`category_id`),
-  KEY `category_key` (`category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=latin1;
+  KEY `court_id` (`court_id`,`category_id`,`type_id`),
+  KEY `category_key` (`category_id`),
+  KEY `heading_id` (`type_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `report`
 --
 
-INSERT INTO `report` (`id`, `court_id`, `category_id`, `fresh`, `contested`, `uncontested`, `transfer`, `received`, `date_of_report`, `date_of_institution`, `date_created`) VALUES
-(63, 8, 23, 12, 0, 0, 2, 2, '2018-01-04 00:00:00', '2011-01-05 00:00:00', '2018-01-04 12:51:42'),
-(64, 8, 15, 10, 0, 0, 0, 0, '2005-07-13 00:00:00', '0000-00-00 00:00:00', '2018-01-05 11:04:02'),
-(66, 8, 15, 20, 0, 0, 0, 0, '2018-01-10 00:00:00', '0000-00-00 00:00:00', '2018-01-05 11:05:04'),
-(69, 8, 15, 100, 0, 0, 0, 0, '2017-12-31 00:00:00', '2012-02-01 00:00:00', '2018-01-05 11:09:56'),
-(71, 8, 15, 10, 0, 0, 0, 0, '2018-01-26 00:00:00', '2012-02-01 00:00:00', '2018-01-08 12:39:48'),
-(72, 8, 22, 0, 0, 0, 0, 0, '2018-01-27 00:00:00', '2012-02-01 00:00:00', '2018-01-08 12:40:04'),
-(74, 8, 15, 0, 110, 0, 87, 0, '2018-01-08 00:00:00', '2012-02-01 00:00:00', '2018-01-08 12:40:51'),
-(75, 8, 20, 213, 0, 0, 0, 0, '2009-01-14 00:00:00', '0000-00-00 00:00:00', '2018-01-08 12:44:58'),
-(76, 8, 23, 987, 987, 0, 0, 0, '2009-01-14 00:00:00', '0000-00-00 00:00:00', '2018-01-08 12:44:58');
+INSERT INTO `report` (`id`, `court_id`, `category_id`, `type_id`, `amount`, `date_of_report`, `date_created`) VALUES
+(22, 8, 21, 16, 987, '2017-12-13 00:00:00', '2017-12-25 16:13:29'),
+(24, 9, 21, 16, 98, '2017-12-13 00:00:00', '2017-12-25 16:15:37'),
+(27, 9, 25, 15, 87, '2017-11-30 00:00:00', '2017-12-26 12:22:36'),
+(28, 9, 26, 15, 987, '2017-11-30 00:00:00', '2017-12-26 12:22:36'),
+(29, 9, 26, 15, 9876, '2017-11-30 00:00:00', '2017-12-26 12:22:36'),
+(30, 9, 24, 15, 876, '2017-11-30 00:00:00', '2017-12-26 12:22:36'),
+(31, 9, 15, 15, 87, '2017-12-26 00:00:00', '2017-12-26 12:32:38'),
+(32, 9, 24, 15, 98, '2017-12-26 00:00:00', '2017-12-26 12:32:38'),
+(33, 9, 23, 15, 987, '2017-12-26 00:00:00', '2017-12-26 12:32:38');
 
 -- --------------------------------------------------------
 
@@ -461,10 +439,10 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`id`, `ip_address`, `username`, `password`, `salt`, `email`, `activation_code`, `forgotten_password_code`, `forgotten_password_time`, `remember_code`, `created_on`, `last_login`, `active`, `first_name`, `last_name`, `company`, `phone`, `city_id`) VALUES
-(1, '127.0.0.1', 'administrator', '$2a$07$SeBknntpZror9uyftVopmu61qg0ms8Qv1yV6FG.kQOSM.9QhmTo36', '', 'admin@admin.com', '', NULL, NULL, 'ubbKewRMYv31hKaEQcspdO', 1268889823, 1515398731, 1, 'Admin', 'istrator', 'ADMIN', '0', 0),
+(1, '127.0.0.1', 'administrator', '$2a$07$SeBknntpZror9uyftVopmu61qg0ms8Qv1yV6FG.kQOSM.9QhmTo36', '', 'admin@admin.com', '', NULL, NULL, 'ubbKewRMYv31hKaEQcspdO', 1268889823, 1514016820, 1, 'Admin', 'istrator', 'ADMIN', '0', 0),
 (2, '::1', 'waris', '$2y$08$T/J0wxK/karJnDpatdPCs.ddOj49k35Nel9Gc73MDa69O4w9/lcNO', NULL, 'user@admin.com', NULL, NULL, NULL, 'TkFkFCz9BRUYpPf7zEoGsO', 1512553577, 1512663067, 1, 'Malik1', 'Waris1', 'DSC Fsd1', '03007201629', 0),
 (3, '::1', '', '$2y$08$ufAZIb7A2O.EgRidvi0a1OLQifH5T0JdbAdXF/X3GLd0T3OZCzxh2', NULL, 'super@admin.com', NULL, NULL, NULL, 'U9F82jQp08YIHehPODXfue', 1512570361, 1512581093, 1, 'User', 'Super', 'DSC Fsd', '03139201629', 0),
-(4, '::1', 'Faisalabad', '$2y$08$HhsSGBETyiSCbBM0Xz2ugOh5xA2akfxaH0oTa/yeaqdU1802IYshO', NULL, 'fsd@admin.com', NULL, NULL, NULL, NULL, 1512972787, 1515408870, 1, 'Faisalabad', 'User', '', '0300-7201629', 1),
+(4, '::1', 'Faisalabad', '$2y$08$HhsSGBETyiSCbBM0Xz2ugOh5xA2akfxaH0oTa/yeaqdU1802IYshO', NULL, 'fsd@admin.com', NULL, NULL, NULL, NULL, 1512972787, 1513186481, 1, 'Faisalabad', 'User', '', '0300-7201629', 1),
 (5, '::1', 'ishfaq', '$2y$08$aFiAevMocfM9cabNMIICGugvGLnlwYmkY9G5itGQxzOJtEjN3ZE12', NULL, 'ishfaq11@admin.com', NULL, NULL, NULL, NULL, 1512976414, NULL, 1, 'Muhammad', 'Ishfaq', 'Jhang', '03007373777', 12),
 (6, '::1', '', '$2y$08$wD.8saaPyFHXtlDYA9712Ol7sabVkPCZ6/NWcVXq5sNNOabbw0qzK', NULL, 'ishfaq1@admin.com', NULL, NULL, NULL, NULL, 1512977238, NULL, 1, 'Ali', 'Raza', 'Faisalabad', '9999-9999999', 1),
 (7, '::1', '', '$2y$08$SRjNmGHFsx90/bGRrrd/0uOlJyY28e/mG8EAxPfkwrhgX7gwTD72i', NULL, 'user1@admin.com', NULL, NULL, NULL, NULL, 1513012412, NULL, 1, 'Malik', 'Waris', 'DSC Fsd', '888888888', 0),
@@ -486,7 +464,7 @@ INSERT INTO `users` (`id`, `ip_address`, `username`, `password`, `salt`, `email`
 (24, '::1', 'ghulam qadir', '$2y$08$VvF0TJWri1v7xcz.FAvGdupRXG5fzKVxKnvwrVFlVoRe6w4FhjBkK', NULL, 'ghulam@gmail.com', NULL, NULL, NULL, NULL, 1513098721, NULL, 1, 'Ghulam', 'Qadir', 'Wix Zoon', '0300-8888222', 0),
 (25, '::1', 'ghulam qadir1', '$2y$08$u9dqKwTBifC8u4UuiMfUKOwW9QNlWX9EYUTJLwRUPABX7pjJIwyia', NULL, 'itbest@admin.com', NULL, NULL, NULL, NULL, 1513098876, NULL, 1, 'Ghualm', 'Qadir', 'wiz dev', '7777-7777777', 1),
 (26, '::1', 'malik asghar', '$2y$08$oW/H4WuEZzjcxuO3NsCpgedrxmVipMlpmsn7B3EHrHOcE5vNnVNFW', NULL, 'asghar@admin.com', NULL, NULL, NULL, NULL, 1513115323, NULL, 1, 'Malik', 'Asghar', 'Colleges Department', '0313-8776622', 1),
-(27, '::1', 'shahid@admin.com', '$2y$08$iDyQ6iAH0imqWu7UlA9ppeXjcZSWSRmmBsQMgVIhNvvfxJtZ6l/fu', NULL, 'shahid@admin.com', NULL, NULL, NULL, NULL, 1514016969, 1515409086, 1, 'Shahid', 'Muneer', 'PTCL', '0315-6263954', 8);
+(27, '::1', 'shahid@admin.com', '$2y$08$iDyQ6iAH0imqWu7UlA9ppeXjcZSWSRmmBsQMgVIhNvvfxJtZ6l/fu', NULL, 'shahid@admin.com', NULL, NULL, NULL, NULL, 1514016969, 1514267103, 1, 'Shahid', 'Muneer', 'PTCL', '0315-6263954', 8);
 
 -- --------------------------------------------------------
 
@@ -582,6 +560,7 @@ ALTER TABLE `judges`
 --
 ALTER TABLE `report`
   ADD CONSTRAINT `category_key` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `heading_id` FOREIGN KEY (`type_id`) REFERENCES `header_information` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `report_court_id` FOREIGN KEY (`court_id`) REFERENCES `courts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
