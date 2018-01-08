@@ -80,12 +80,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <li class="<?=active_link_controller('cases')?>"><a href="<?php echo site_url('district/cases/create'); ?>"><i class="fa fa-edit"></i><?php echo lang('menu_enter_cases'); ?></a></li>
                                 <li class="<?=active_link_controller('cases')?>"><a href="<?php echo site_url('district/cases/njp'); ?>"><i class="fa fa-bar-chart-o"></i>NJP REPORT</a></li>
                             
+                                 <li class="<?=active_link_controller('cases')?>"><a href="<?php echo site_url('district/cases/monthly'); ?>"><i class="fa fa-bar-chart-o"></i>MONTHLY REPORT</a></li>
+                            
                             
                             </ul>
                         </li>
       
 
 
+                        
+                        
+                        
                         <li class="header text-uppercase"><?php echo $title; ?></li>
                         
                     </ul>

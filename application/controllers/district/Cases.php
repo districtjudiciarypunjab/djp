@@ -19,6 +19,14 @@ class Cases extends District_Controller {
         /* Breadcrumbs :: Common */
         $this->data['breadcrumb'] = $this->breadcrumbs->show();
         $this->breadcrumbs->unshift(1, lang('menu_cases'), 'district/cases');
+        
+        
+        
+        
+        
+        
+       
+        
     }
 
 	public function create()
@@ -58,8 +66,10 @@ class Cases extends District_Controller {
 //			{
 //				$this->data['users'][$k]->groups = $this->ion_auth->get_users_groups($user->id)->result();
 //			}
+                        
+                        $this->data['report_model']=$this->report_model;
 			$this->data['categories']=$this->category_model->getCategories();
-            $this->data['Heads']=$this->Heads_model->getHeadsByParent();
+                        $this->data['Heads']=$this->Heads_model->getHeadsByParent();
             
 // 			echo '<pre>';
 // 			var_dump($court);
@@ -74,7 +84,7 @@ class Cases extends District_Controller {
         
         
         
-        public function njp()
+        public function  njp()
 	{
 		if ( ! $this->ion_auth->logged_in() )
 		{
@@ -100,8 +110,8 @@ class Cases extends District_Controller {
            
                         $this->data['criminal_categories']=$this->category_model->getCategories(["case_type_id"=>1]);
            
-                        $this->data['Heads']=$this->Heads_model->getHeadsByParent();
-            $this->data['report_model']=$this->report_model;
+           $this->data['report_model']=$this->report_model;
+           
 // 			echo '<pre>';
 // 			var_dump($this->data['criminal_categories']);
 // 			die();
@@ -139,7 +149,6 @@ class Cases extends District_Controller {
            
                         $this->data['criminal_categories']=$this->category_model->getCategories(["case_type_id"=>1]);
            
-                        $this->data['Heads']=$this->Heads_model->getHeadsByParent();
             $this->data['report_model']=$this->report_model;
             
 // 			echo '<pre>';
@@ -187,8 +196,14 @@ public function getJsonReport(){
     if ($this->input->is_ajax_request()) {
             $date_of_report=date("Y-m-d",strtotime($this->input->post("date_of_report")));
             $court_id=$this->input->post("court_id");
-            
-        $report=$this->report_model->getReportByCondition(["date_of_report"=>$date_of_report,"court_id"=>$court_id]);
+            $institution_date=$this->input->post("date_of_institution");
+        
+            if($this->report_model->after_date > $institution_date){
+                 $condition="  date_of_institution > '$institution_date'";
+            }else{
+                $condition="  date_of_institution < '$institution_date'";
+            }
+        $report=$this->report_model->getReportByCondition(["date_of_report"=>$date_of_report,"court_id"=>$court_id],$condition);
 header('Content-Type: application/json');
         echo json_encode($report);
         exit;

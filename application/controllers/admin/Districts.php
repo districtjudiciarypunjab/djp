@@ -94,7 +94,111 @@ class Districts extends Admin_Controller {
 			$this->template->admin_render('admin/districts/add_city', $this->data);
 		}
 	}
-	
+	  public function  njp()
+	{
+		if ( ! $this->ion_auth->logged_in() )
+		{
+			redirect('auth/login', 'refresh');
+		}
+		else
+		{ 
+                    $this->load->model("district/category_model");
+        
+        $this->load->model("district/report_model");
+        $this->load->model("admin/Heads_model");
+        $this->load->model('admin/courts_model');
+        
+			/* Breadcrumbs */
+			$this->data['breadcrumb'] = $this->breadcrumbs->show();
+			$this->breadcrumbs->unshift(2, "NJP REPORT", 'district/cases');
+			
+			$this->data['sub_title'] = "NJP REPORT";
+			
+			// load js files in array
+			$this->data['custom_js'] = array('/select2/js/select2.full.min.js','/bootstrap-datepicker/js/bootstrap-datepicker.min.js');
+			// 	load css files
+			$this->data['css_files'] = array('/select2/css/select2.min.css','/bootstrap-datepicker/css/bootstrap-datepicker.min.css');
+		
+			$user = $this->ion_auth->user()->row();
+//			$this->data['courts'] = $this->courts_model->getCourtsByUser($user->id);
+		$this->data['districts'] = $this->districts_model->getCitiesNamewithTehsils();
+                        if(!empty($_GET['court_id'])){
+                $this->data['district'] = $this->districts_model
+                        ->getCitiesNamewithTehsils("districts.id='{$_GET['court_id']}'");                            
+                        }else{
+                            $this->data['district'] = $this->districts_model
+                        ->getCitiesNamewithTehsils("districts.id='{$this->data['districts'][0]->id}'"); 
+                        }	
+
+                        $this->data['civil_categories']=$this->category_model->getCategories(["case_type_id"=>2]);
+           
+                        $this->data['criminal_categories']=$this->category_model->getCategories(["case_type_id"=>1]);
+           
+                        $this->data['court_id']=array(
+                            
+                        );
+                        
+           $this->data['report_model']=$this->report_model;
+//           $this->data['court_id']=array(
+//               "district_id"=>
+//           );
+// 			echo '<pre>';
+// 			var_dump($this->data['criminal_categories']);
+// 			die();
+//	
+			/* Load Template */
+			$this->template->admin_render('district/cases/njp', $this->data);
+		}
+	}
+        
+        
+        
+        public function monthly()
+	{
+		if ( ! $this->ion_auth->logged_in() )
+		{
+			redirect('auth/login', 'refresh');
+		}
+		else
+		{
+                     $this->load->model("district/category_model");
+        
+        $this->load->model("district/report_model");
+        $this->load->model("admin/Heads_model");
+        $this->load->model('admin/courts_model');
+        
+			/* Breadcrumbs */
+			$this->data['breadcrumb'] = $this->breadcrumbs->show();
+			$this->breadcrumbs->unshift(2, "Monthly REPORT", 'district/cases');
+			
+			$this->data['sub_title'] = "Monthly REPORT";
+			
+			// load js files in array
+			$this->data['custom_js'] = array('/select2/js/select2.full.min.js','/bootstrap-datepicker/js/bootstrap-datepicker.min.js');
+			// 	load css files
+			$this->data['css_files'] = array('/select2/css/select2.min.css','/bootstrap-datepicker/css/bootstrap-datepicker.min.css');
+		
+			$user = $this->ion_auth->user()->row();
+//			$this->data['courts'] = $this->courts_model->getCourtsByUser($user->id);
+		$this->data['districts'] = $this->districts_model->getCitiesNamewithTehsils();
+                        if(!empty($_GET['court_id'])){
+                $this->data['district'] = $this->districts_model
+                        ->getCitiesNamewithTehsils("districts.id='{$_GET['court_id']}'");                            
+                        }else{
+                            $this->data['district'] = $this->districts_model
+                        ->getCitiesNamewithTehsils("districts.id='{$this->data['districts'][0]->id}'"); 
+                        }	
+                        $this->data['civil_categories']=$this->category_model->getCategories(["case_type_id"=>2]);
+           
+                        $this->data['criminal_categories']=$this->category_model->getCategories(["case_type_id"=>1]);
+           
+                        $this->data['report_model']=$this->report_model;
+            
+			/* Load Template */
+			$this->template->admin_render('district/cases/monthly', $this->data);
+		}
+	}
+        
 	public function save()
 	{
 		$data = array(

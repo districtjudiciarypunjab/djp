@@ -3,6 +3,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Report_model extends CI_Model {
 
+    public $before_date="31-12-2011";
+    public $after_date="01-01-2012";
+
     public function __construct()
     {
         parent::__construct();
@@ -24,19 +27,20 @@ class Report_model extends CI_Model {
 		return $result;
 	}
         
-        public function getReportByCondition($condition=[])
+        public function getReportByCondition($condition=[],$second_condition=null)
 	{
 		$this->db->select('*');
 		$this->db->from('report');
 		 
                 
                 if(count($condition)>0){
-                foreach($condition as $key=>$value){ 
-                    
-                $this->db->where($key,$value);   
-                
-                }
-                
+                foreach($condition as $key=>$value){            
+                $this->db->where($key,$value);        
+                }        
+        }
+        
+                if($second_condition!=null){
+                    $this->db->where($second_condition);
                 }
 //               
                 $query = $this->db->get();
@@ -65,25 +69,33 @@ class Report_model extends CI_Model {
 	{
               
           $date_of_report=date("Y-m-d",strtotime($this->input->post("heading[date_of_report]")));
-      	
+      	 $date_of_institution=$this->input->post("heading[institution_date]");
+       $date_of_institution=date("Y-d-m",strtotime($date_of_institution));
           	$court_id=$this->input->post("heading[court_id]");
-      
            $this->db->where("date_of_report","{$date_of_report}");
            $this->db->where("court_id",$court_id);
            $this->db->delete("report");
-           
-                   
             $data=[];
+            
 foreach($this->input->post("heading[category_id]") as $key => $value):
             
     if(!empty($value)):
         
-    $fresh=$this->input->post("heading[fresh][{$key}]");
+           
+    
+   
+            $fresh=$this->input->post("heading[fresh][{$key}]");
             $contested=$this->input->post("heading[contested][{$key}]");
             $uncontested=$this->input->post("heading[uncontested][{$key}]");
             $transfer=$this->input->post("heading[transfer][{$key}]");
             $received=$this->input->post("heading[received][{$key}]");
-
+            
+//        if($date_of_institution<$this->before_date){
+//              $this->getPendingCasesBefore($court_id, $category_id, $date_of_institution);
+//        }elseif($date_of_institution>$this->after_date){
+//    $this->getPendingCasesAfter($court_id, $category_id, $date_of_institution);
+//        }
+        
 
             
                                 $data[]=array(
@@ -94,7 +106,8 @@ foreach($this->input->post("heading[category_id]") as $key => $value):
                                             "contested"=>$contested,
                                             "uncontested"=>$uncontested,
                                             "transfer"=>$transfer,
-                                            "received"=>$received
+                                            "received"=>$received,
+                                    "date_of_institution"=>$date_of_institution
                                             );
                                 
                                
@@ -133,70 +146,94 @@ foreach($this->input->post("heading[category_id]") as $key => $value):
 		$result = $query->result();
 		return $result;
 
-// 		$categories = array();
-		
-// 		$query = $this->db->query("SELECT * FROM categories WHERE cat_id='".$parent_id."' ORDER BY cat_name asc;");
-		
-// 		foreach ($query->result() as $row)
-// 		{
-// 			$category = array();
-			
-// 			$category['id'] = $row->id . '<br>';
-// 			$category['name'] = $row->cat_name . '<br>';
-// 			$category['parent_id'] = $row->cat_id .'<br>';
-// 			$category['sub_categories'] = $this->getCategoryForParentId($category['id']);
-// 			$categories[$row->id]=  $category;
-// 		}
-		
-// 		return $categories;
 	}
      
-        public function getPreviousPendingBefore($type_id,$court_id,$category_id){
-           $pending=$this->getCasesTotalOf(14,$court_id,$category_id)
-                   +$this->getCasesTotalOf(16,$court_id,$category_id)
-                   +$this->getCasesTotalOf(17,$court_id,$category_id)
-                   -$this->getCasesTotalOf(18,$court_id,$category_id)
-                   -$this->getCasesTotalOf(19,$court_id,$category_id);;
-           return $pending;
-        }
-        public function getTotalPendingCases($type_id,$court_id,$category_id){
-            return $total=$this->getPreviousPendingBefore($type_id,$court_id,$category_id)+$this->getPreviousPendingAfter($type_id,$court_id,$category_id);
-        }
         
-       
+      
         
-           public function getPreviousPendingAfter($type_id,$court_id,$category_id){
-           $pending=$this->getCasesTotalOf(21,$court_id,$category_id)
-                   +$this->getCasesTotalOf(22,$court_id,$category_id)
-                   +$this->getCasesTotalOf(23,$court_id,$category_id)
-                   -$this->getCasesTotalOf(24,$court_id,$category_id)
-                   -$this->getCasesTotalOf(25,$court_id,$category_id)
-                   -$this->getCasesTotalOf(26,$court_id,$category_id);
-           return $pending;
+        public function getPendingCases($category_id,$court_id,$from,$institution_date=null){
+            
+           
+            
+     $total    = $this->getCasesTotalOf("fresh", $court_id, $category_id,$from,null,$institution_date)
+                     -
+                    $this->getCasesTotalOf("contested", $court_id, $category_id,$from,null,$institution_date)
+                         -
+                         $this->getCasesTotalOf("uncontested", $court_id, $category_id,$from,null,$institution_date)
+                                    -
+                                $this->getCasesTotalOf("transfer", $court_id, $category_id,$from,null,$institution_date)
+                                        + 
+                                     $this->getCasesTotalOf("received", $court_id, $category_id,$from,null,$institution_date);
+    
+    return $total;  
         }
         
-       public function getCasesTotalOf($of,$court_id,$category_id,$from=null,$to=null){
+        public function getFreshCases($category_id,$court_id,$from,$to,$institution_date=null)
+        {
+                        $result=  $this->getCasesTotalOf("fresh", $court_id, $category_id,$from,$to,$institution_date=null);
+        
+                        return $result??0;
+        }
+          public function getContestedCases($category_id,$court_id,$from,$to,$institution_date=null)
+        {     
+                        $result =   $this->getCasesTotalOf("contested", $court_id, $category_id,$from,$to,$institution_date=null);
+                        return $result??0;
+                        
+        }
+        public function getUnContestedCases($category_id,$court_id,$from,$to,$institution_date=null)
+        {     
+                        $result   =    $this->getCasesTotalOf("uncontested", $court_id, $category_id,$from,$to,$institution_date=null);        
+        
+                        return $result??0;
+        }
+         public function getReceivedCases($category_id,$court_id,$from,$to,$institution_date=null)
+        {
+                       $result  =    $this->getCasesTotalOf("received", $court_id, $category_id,$from,$to,$institution_date=null);
+        
+                       return $result??0;
+        }
+        
+         public function getTransferCases($category_id,$court_id,$from,$to,$institution_date=null)
+        {
+                        $result =   $this->getCasesTotalOf("transfer", $court_id, $category_id,$from,$to,$institution_date=null);
+                        return $result??0;
+        }
+        
+       public function getCasesTotalOf($of,$court_id=[],$category_id,$from=null,$to=null,$extra_condition=null){
+           $this->db->distinct();
            $this->db->select("sum({$of}) as result");
            $this->db->from("report");
-           $condition=" court_id='{$court_id}' AND category_id='{$category_id}'";
+           $this->db->join("courts c","c.id=report.court_id","left");
+           $this->db->join("districts d","d.id=c.city_id","left");
+           $condition=" category_id='{$category_id}'";
            
-           if(!empty($from) && !empty($to)){
-               
+           if(!empty($to))
+           {
                $condition.="AND  (date_of_report BETWEEN '{$from}' AND '{$to}')";
-           
-               
-               }else{
-               $current_date=date("1-m-Y");
-               $condition.=" AND date_of_report < '{$current_date}'";
+           }
+           elseif(!empty($from) && empty($to))
+           {
+              
+               $condition.=" AND date_of_report < '{$from}'";
            }
            
+           if(!empty($extra_condition)){
+               $condition.="AND {$extra_condition}";
+           }
+           
+           
+           
+           
            $this->db->where($condition);
-          
+           foreach($court_id as $key=>$value){
+             
+               $this->db->where($key,$value);
+           }
+           
            
            $query=$this->db->get();
            $result=$query->result();
            if(count($result)>0){
-           
           return $result[0]->result;
            }
            else{
@@ -205,31 +242,5 @@ foreach($this->input->post("heading[category_id]") as $key => $value):
            
        }
        
-        public function getTotalInstitution($type_id,$court_id,$category_id,$from,$to){
-            
-            return $this->getCasesTotalOf(22,$court_id,$category_id,$from,$to);
-            
-        }
        
-        public function getTotalContustedCases($type_id,$court_id,$category_id,$from,$to){
-            
-            return $this->getCasesTotalOf(24,$court_id,$category_id,$from,$to)+$this->getCasesTotalOf(17,$court_id,$category_id,$from,$to);
-        }
-        
-                public function getTotalUnContustedCases($type_id,$court_id,$category_id,$from,$to){
-            
-            return $this->getCasesTotalOf(25,$court_id,$category_id,$from,$to)+$this->getCasesTotalOf(25,$court_id,$category_id,$from,$to);
-            
-        }
-        
-        public function getTotalTTC($type_id,$court_id,$category_id,$from,$to){
-            return $this->getCasesTotalOf(26,$court_id,$category_id,$from,$to)+$this->getCasesTotalOf(19,$court_id,$category_id,$from,$to);
-        }
-        
-         public function getTotalRBT($type_id,$court_id,$category_id,$from,$to){
-            return $this->getCasesTotalOf(16,$court_id,$category_id,$from,$to)+$this->getCasesTotalOf(23,$court_id,$category_id,$from,$to);
-        }
-       
-	
-	
 }

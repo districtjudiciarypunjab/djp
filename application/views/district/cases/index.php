@@ -10,11 +10,59 @@
             	<div class="col-sm-8 col-sm-offset-4 text-danger m-b-10">
 					<?php if (!empty(validation_errors())) { echo '<strong>Please fill below required field(s).</strong>'; } ?>
 					<?php echo $message;?>
-				</div>                                    
+		</div>                                    
 			<?php endif; ?>
                
 			<div class="box-body">
 					
+<!--                            <div class="box">
+                                
+                                <div class="box-title">
+                            Previously Pending Cases
+                                </div>
+                                <div class="box-body">
+                                        
+                                <?php echo form_open(base_url('district/cases/save_pending'),'class="form-horizontal"'); ?>
+                                    
+                                        <div class="form-group">
+						<label class="col-sm-4 control-label">Previous Pending Cases:</label>
+						<div class="col-sm-8">
+							<input id="pending_cases" name="pending_cases" type="text" class="form-control" placeholder="Previous Pending Cases">
+  
+						</div>
+					</div>
+                                         
+                                    
+                                    
+                                    <div class="form-group">
+                                            <label class="col-sm-4 control-label">Pending Date:</label>
+						<div class="col-sm-8">
+                                            <label> 
+                                            <input type="radio" name="heading[institution_date][]" value="29/12/2011" id="institution_date" >Before 31/12/2011
+                                            </label>
+                                            
+                                            <label> <input type="radio" name="heading[institution_date][]" value="02/01/2012" id="institution_date" >After 1/12/2012
+                                            </label>
+                                                </div>
+                                         </div>
+                                        		
+					<div class="form-group">
+						<div class="col-sm-6 col-sm-offset-3">
+							<input type="submit" value="Save Pending Cases" class="btn btn-lg btn-info">
+						</div>
+					</div>
+                                
+				<?php echo form_close(); ?>
+                                        
+                                        
+                                </div>
+                            </div>-->
+                                        
+                                        
+                                        
+                                        
+                            <!--<div class="box-header"><center><b>OR</b></center></div>-->
+                            <div class="box-header"></center></div>            
 				<?php echo form_open(base_url('district/cases/save'),'class="form-horizontal"'); ?>
                             
 				<div class="col-sm-6">
@@ -41,6 +89,28 @@
 							<input id="date-of-report" name="heading[date_of_report]" type="text" class="form-control datepicker" placeholder="<?php echo lang("cases_select_date"); ?>">
 						</div>
 					</div>
+                                    
+                                    
+                                                                            <div class="form-group">
+						<label class="col-sm-4 control-label">SELECT INSTITUTION DATE</label>
+						<div class="col-sm-8">
+							
+                                            
+                                            <label> 
+                                                <input type="radio"
+                                                           class="institution_date"
+                                                           checked="checked" name="heading[institution_date]" value="<?php echo date("d-m-Y",strtotime($report_model->before_date."-1 days")); ?>" id="institution_date" >Before <?php echo $report_model->before_date; ?>
+                                            </label>
+                                            
+                                            <label>
+                                                <input type="radio"
+                                                            class="institution_date"
+                                                           name="heading[institution_date]" value="<?php echo date("d-m-Y",strtotime($report_model->after_date."+1 days")); ?>" id="institution_date" >After <?php echo $report_model->after_date; ?>
+                                            </label>
+                                            
+                                        </div>
+                                                                            </div>
+                                    
 						
 					
                                 </div>
@@ -55,7 +125,8 @@
                     				<th class="text-center" colspan="2">DECIDED CASES</th>
                     				<th class="text-center" rowspan="2">TRANSFER CASES</th>
                                                 <th class="text-center" rowspan="2">RECEIVE BY TRANSFER CASES</th>
-                    				<th rowspan="2"></th>                   
+                    				
+                                                <th rowspan="2"></th>                   
 					</tr>
 								<tr>
 									
@@ -91,6 +162,7 @@
 	                                <td><input type="text" name="heading[uncontested][]" value="" id="uncontested" placeholder="uncontested i.e: 123"  class="form-control"></td>
 	                                <td><input type="number" name="heading[transfer][]" value="" id="transfer" placeholder="transfered  i.e: 123"  class="form-control"></td>
 	                                <td><input type="number" name="heading[received][]" value="" id="received" placeholder="Received i.e: 123"  class="form-control"></td>
+
                                 
                                 	<td class="buttons">
                                 		<span class="btn btn-primary btn-sm  btn-add"><i class="fa fa-plus fa-2x "></i></span>
@@ -131,25 +203,19 @@ $(document).on("click",".btn-add",function(){
         alert("Heading Cannot be empty");
         return false;
     }
-    
         var controlForm = $('tbody'),
             currentEntry = $(this).parents('tbody tr:first'),
             newEntry = $(currentEntry.clone()).appendTo(controlForm);
-
         newEntry.find('input').val('');
         controlForm.find('tr:not(:last) .buttons .btn-add')
             .removeClass('btn-add').addClass('btn-remove')
-            .find(".fa-plus").removeClass("fa-plus").addClass("fa-remove");
-    
-    
+            .find(".fa-plus").removeClass("fa-plus").addClass("fa-remove");    
 }).on('click','.btn-remove', function()
-    {
+        {
 		$(this).parents('tr').remove();
-
-		
 	});
         
-       $("#date-of-report").on("change",function(){
+       $("#date-of-report,.institution_date").on("change",function(){
            $("body #dataTable>tbody").html(prevoiusEntry);
           
   waitingDialog.show("Please wait...");
@@ -159,7 +225,7 @@ $(document).on("click",".btn-add",function(){
        $.ajax({
            type:"POST",
            url:"<?php echo base_url("district/cases/getJsonReport"); ?>",
-           data:{date_of_report:$("#date-of-report").val(),court_id:$("#court_id").val()},
+           data:{date_of_report:$("#date-of-report").val(),court_id:$("#court_id").val(),date_of_institution:$(".institution_date:checked").val()},
            success:function(data){
 
 $.each(data,function(i,e){
@@ -181,15 +247,13 @@ newEntry=newEntry
         controlForm.find('tr:not(:last) .buttons .btn-add')
             .removeClass('btn-add').addClass('btn-remove')
             .find(".fa-plus").removeClass("fa-plus").addClass("fa-remove");
-    
 });
 
 
 
     waitingDialog.hide();
            },
-           dataType:"JSON",
-   
+          dataType:"JSON",
     error: function (jqXHR, exception) {
         var msg = '';
         if (jqXHR.status === 0) {

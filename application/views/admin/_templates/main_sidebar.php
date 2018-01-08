@@ -102,15 +102,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             	<li class="<?=active_link_function('add')?>"><a href="<?php echo site_url('admin/category/add');?>"><i class="fa fa-plus-square"></i><?php echo lang('menu_category_add'); ?></a></li>
                             </ul>
                         </li>
+                       
                         
-                         <li class="treeview <?=active_link_controller('heads')?>">
+                        
+                        
+                         <li class="treeview <?=active_link_controller('districts')?><?=active_link_controller('groups')?>">
                             <a href="#">
-                                <i class="fa fa-bars"></i><span><?php echo "Headings"; ?></span>
+                                <i class="fa fa-file-archive-o"></i><span>Reports</span>
                                 <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
-                            	<li class="<?=active_link_function('index')?>"><a href="<?php echo site_url('admin/heads');?>"><i class="fa fa-list"></i><?php echo "List"; ?></a></li>
-                            	<li class="<?=active_link_function('add')?>"><a href="<?php echo site_url('admin/heads/add');?>"><i class="fa fa-plus-square"></i><?php echo "Add headings"; ?></a></li>
+                              <li class="<?=active_link_controller('cases')?>"><a href="<?php echo site_url('admin/districts/njp'); ?>"><i class="fa fa-bar-chart-o"></i>NJP REPORT</a></li>
+                            
+                                 <li class="<?=active_link_controller('cases')?>"><a href="<?php echo site_url('admin/districts/monthly'); ?>"><i class="fa fa-bar-chart-o"></i>MONTHLY REPORT</a></li>
+                            
+                            
                             </ul>
                         </li>
             

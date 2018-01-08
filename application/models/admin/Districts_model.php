@@ -9,15 +9,20 @@ class Districts_model extends CI_Model {
     }
     
     // cityNames with tehsil name Dropdown options
-    public function getCitiesNamewithTehsils()
+    public function getCitiesNamewithTehsils($condition="")
     {
     	 
-    	$this->db->select('districts.city_name as city_name, teh.id as teh_id, teh.city_name as tehsil_name');
+    	$this->db->select('districts.id as id, districts.city_name as city_name, teh.id as teh_id, teh.city_name as tehsil_name');
     	$this->db->from('districts');
     	$this->db->join("districts teh", "teh.teh_id=districts.id","left");
-    	$this->db->where("districts.teh_id IS NULL");
-    	$this->db->order_by('city_name asc, tehsil_name asc');
-    
+    	if(empty($condition)){
+        $this->db->where("districts.teh_id IS NULL");
+        }else{
+       $this->db->where($condition);
+            
+        }
+        $this->db->order_by('city_name asc, tehsil_name asc');
+       
     	$query = $this->db->get();
     	$result = $query->result();
     	return $result;
